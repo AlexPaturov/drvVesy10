@@ -9,6 +9,7 @@ InstallUtil.exe /u D:\repos\cSharp\job\pipeComToIp\drvVesy10\bin\Debug\drvVesy10
 using System;
 using System.Collections.Generic;
 using System.IO.Ports;
+using System.Net.Sockets;
 using System.ServiceProcess;
 using System.Threading;
 
@@ -18,6 +19,7 @@ namespace drvVesy10
     {
         private static readonly log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         static SerialPort sp = null;
+        Socket moxaTC = null;
         ServerMode sm = null;
         Dictionary<string, string> settCom = new Dictionary<string, string>();
         protected Thread thServiceThread = null;
@@ -57,6 +59,7 @@ namespace drvVesy10
             try
             {
                 sp = new SerialPort(settCom["serialport"], int.Parse(settCom["baudrate"].Trim()), Parity.None, 8, StopBits.One);
+                //moxaTC = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                 sm = new ServerMode();
                 retval = sm.Run(settCom, sp);
             }

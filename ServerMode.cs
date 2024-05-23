@@ -81,6 +81,7 @@ namespace drvVesy10
                 conn.StopRequest();
 
             _run = false;
+            Thread.Sleep(1000); // 23.05.2024 - не тестировал
         }
     }
 }
