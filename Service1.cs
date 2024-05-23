@@ -8,8 +8,10 @@ InstallUtil.exe /u D:\repos\cSharp\job\pipeComToIp\drvVesy10\bin\Debug\drvVesy10
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO.Ports;
 using System.Net.Sockets;
+using System.Reflection;
 using System.ServiceProcess;
 using System.Threading;
 
@@ -28,6 +30,7 @@ namespace drvVesy10
 
         public Service1()
         {
+            SetDefaultCulture();
             InitializeComponent();
             logger.Info("InitializeComponent()");
             #region словарь с настройками COM порта settCom
@@ -85,6 +88,28 @@ namespace drvVesy10
                 sm.StopRequest();
             }
             sm = null; 
+        }
+
+        public static void SetDefaultCulture()
+        {
+            CultureInfo cultureInfo = CultureInfo.CreateSpecificCulture("en-US");
+            Thread.CurrentThread.CurrentCulture = cultureInfo;
+            Thread.CurrentThread.CurrentUICulture = cultureInfo;
+            CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
+            CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
+
+            Type type = typeof(CultureInfo);
+            type.InvokeMember("s_userDefaultCulture",
+                                BindingFlags.SetField | BindingFlags.NonPublic | BindingFlags.Static,
+                                null,
+                                cultureInfo,
+                                new object[] { cultureInfo });
+
+            type.InvokeMember("s_userDefaultUICulture",
+                                BindingFlags.SetField | BindingFlags.NonPublic | BindingFlags.Static,
+                                null,
+                                cultureInfo,
+                                new object[] { cultureInfo });
         }
 
     }
