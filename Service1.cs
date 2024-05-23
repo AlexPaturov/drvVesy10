@@ -2,6 +2,7 @@
 cd C:\Windows\Microsoft.NET\Framework64\v4.0.30319
 InstallUtil.exe D:\repos\cSharp\job\pipeComToIp\drvVesy10\bin\Debug\drvVesy10.exe
 InstallUtil.exe /u D:\repos\cSharp\job\pipeComToIp\drvVesy10\bin\Debug\drvVesy10.exe
+Ставим запуск службы в автомате в ручную. При установке автозапуска службы в проекте, почему-то иногда не срабатывает. 
  */
 
 /* Проработать FileAppender.LockingModel в App.config. Стоит ли переназначать дефолтное значение?  */
