@@ -20,14 +20,14 @@ namespace drvVesy10
         {
         }
 
-        public int Run(Dictionary<string, string> d, SerialPort sp)
+        public int Run(Dictionary<string, string> d, Socket moxaTC)
         {
             logger.Info("SOCKET SERVER MODE"); // SOCKET SERVER MODE  - waits for inbound connections
             DateTime dtPrevious = DateTime.Now;
             _run = true;
 
             Socket srv = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            srv.Bind(new IPEndPoint(IPAddress.Any, int.Parse( d["socketport"].Trim() )));
+            srv.Bind(new IPEndPoint(IPAddress.Any, int.Parse( d["clientPort"].Trim() ))); // поменял только имя
             srv.Listen(1);
             srv.ReceiveTimeout = 10;
             //srv.SendTimeout = 2000;
@@ -37,22 +37,30 @@ namespace drvVesy10
             {
                 Socket soc = null;
 
-                if ((sp.IsOpen == false) && (srv.Poll(1000, SelectMode.SelectRead) == true))
+                try
                 {
-                    soc = srv.Accept();
+                    if (!moxaTC.Connected && srv.Poll(1000, SelectMode.SelectRead))
+                    {
+                        soc = srv.Accept();
+                    }
+                }
+                catch (Exception ex) // для удобства - пишу исключение и пробрасываю наверх, как предусмотрено первоначальной логикой
+                {
+                    logger.Error(ex);
+                    throw;
                 }
 
-                if ((sp.IsOpen == false) && (soc != null))
+                if (!moxaTC.Connected && soc != null)
                 {
                     logger.Info("Tcp client connected");
                     conn = new Connection();
                     try
                     {
-                        bool didStart = conn.StartConnection(soc, d, sp);
+                        bool didStart = conn.StartConnection(soc, d, moxaTC);
                     }
                     catch(Exception ex)
                     {
-                        logger.Error("IP-to-SERIAL connection initialization failed" + "\r\nMS:" + ex.Message + "\r\nST:" + ex.StackTrace); // OK...may be the serial port was not free at the moment...
+                        logger.Error(ex);
                         conn = null;
                     }
                 }

@@ -20,10 +20,10 @@ namespace drvVesy10
     public partial class Service1 : ServiceBase
     {
         private static readonly log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-        static SerialPort sp = null;
-        Socket moxaTC = null;
+        static SerialPort sp = null; // на удаление
+        Socket moxaTC = null;  // нк
         ServerMode sm = null;
-        Dictionary<string, string> settCom = new Dictionary<string, string>();
+        Dictionary<string, string> dn = new Dictionary<string, string>();
         protected Thread thServiceThread = null;
         protected bool _connected = false;
         protected bool _is_shown = false;
@@ -34,21 +34,22 @@ namespace drvVesy10
             InitializeComponent();
             logger.Info("InitializeComponent()");
             #region словарь с настройками COM порта settCom
-            settCom = new Dictionary<string, string>();
+            dn = new Dictionary<string, string>();
 
-            settCom.Add("serialport", "COM3");
-            settCom.Add("baudrate", "9600");
+            //dn.Add("serialport", "COM3"); // на удаление
+            //dn.Add("baudrate", "9600");   // на удаление
+            dn.Add("moxaHost", "10.10.10.1");       // нк
+            dn.Add("moxaHostDKZ", "dkz-moxa-010");  // нк
+            dn.Add("moxaPort", "4001");             // нк
+            dn.Add("clientHost", "127.0.0.1");      // нк
+            dn.Add("clientPort", "8888");           // нк
 
-            //settCom.Add("serialport", "COM1");
-            //settCom.Add("baudrate", "115200");
-
-            settCom.Add("socketport", "8888");
+            //dn.Add("socketport", "8888");   // на удаление
             #endregion
         }
 
         protected override void OnStart(string[] args)
         {
-
             logger.Info("OnStart");
             thServiceThread = new Thread(ServiceThread);
             thServiceThread.Start();
@@ -58,13 +59,14 @@ namespace drvVesy10
         {
             int retval = 0;
 
-            logger.Info("Service start " + settCom["serialport"] + " " + int.Parse(settCom["baudrate"].Trim()).ToString());
+            //logger.Info("Service start " + dn["serialport"] + " " + int.Parse(dn["baudrate"].Trim()).ToString());
+            logger.Info("ServiceThread start " + this.dn["clientHost"] + " " + int.Parse(this.dn["clientPort"].Trim()).ToString());
             try
             {
-                sp = new SerialPort(settCom["serialport"], int.Parse(settCom["baudrate"].Trim()), Parity.None, 8, StopBits.One);
-                //moxaTC = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                //sp = new SerialPort(dn["serialport"], int.Parse(dn["baudrate"].Trim()), Parity.None, 8, StopBits.One);
+                moxaTC = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                 sm = new ServerMode();
-                retval = sm.Run(settCom, sp);
+                retval = sm.Run(dn, moxaTC);
             }
             catch (Exception ex) 
             { 

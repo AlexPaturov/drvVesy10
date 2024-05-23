@@ -8,7 +8,7 @@ using System.Xml;
     Привожу полученные от контроллера данные к требуемому по спецификации формату, для ответа АРМ(у) весов.
  */
 
-namespace serialtoip
+namespace drvVesy10
 {
     public static class XMLFormatter
     {
